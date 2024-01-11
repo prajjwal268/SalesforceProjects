@@ -1,0 +1,4 @@
+<aura:component >
+	<c:searchComp></c:searchComp>
+    <c:technicianDetails></c:technicianDetails>
+</aura:component>

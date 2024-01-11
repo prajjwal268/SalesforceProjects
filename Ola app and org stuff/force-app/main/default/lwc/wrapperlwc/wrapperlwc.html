@@ -1,0 +1,11 @@
+<template>
+    <lightning-card title="LWC Wrapper Component">
+       <template if:true={wrappers.data}>
+           <template for:each={wrappers.data} for:item="wrap">
+               
+               
+               <p key={wrap.con.Id}> <lightning-input key={wrap.con.id} type="checkbox"   checked={wrap.selected} onchange={Change}></lightning-input>{wrap.con.Name}:{wrap.selected}</p>
+           </template>
+       </template>
+    </lightning-card>
+</template>

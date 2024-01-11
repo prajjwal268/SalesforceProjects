@@ -1,0 +1,141 @@
+<template>
+    <template if:true={visible}>
+        <lightning-card>
+    <div class="slds-text-heading_large">Search Hcp</div>
+        </lightning-card>
+    <lightning-card>
+    <lightning-input type="text"
+        label="First Name"
+        value={firstName}
+        onchange={getfirstname} required>
+    </lightning-input>
+    <lightning-input type="text"
+        label="Last Name"
+        value={lastName}
+        onchange={getlastname} required>
+    </lightning-input>
+    <lightning-input type="text"
+        label="Address"
+        value={address}
+        onchange={getaddress} required>
+    </lightning-input>
+         <lightning-button variant="brand" name="sbaI" label="Search by the above information" onclick={handleSearch} class="slds-m-left_x-small"></lightning-button>
+        &nbsp;
+        <!--To clear the search text-->
+        <lightning-button variant="destructive-text" label="Clear Search" onclick={clearSearch} class="slds-m-left_x-small"></lightning-button>
+    </lightning-card>
+    </template>
+    <template if:true={displayHcpList}>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">First Name</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Last Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Address</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Status</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">View</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   
+                   
+                   <template if:true={hcpList}>
+                    <template for:each={hcpList} for:item="hcp">
+                        <tr class="slds-hint-parent" key={hcp.Id}>
+                            <td>
+                                <div class="slds-truncate">{hcp.First_Name__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{hcp.Last_Name__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{hcp.Location_Address__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" >{hcp.status__c}</div>
+                            </td>
+                            <td>
+                                <!--to add item to the choosen product List-->
+                                <div class="slds-truncate"><lightning-button label="View HCP"
+                                                                            variant="brand-outline"
+                                                                            value={hcp.Id}
+                                                                            onclick={addToselectedhcpItem}>
+                                                            </lightning-button>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                   
+                </tbody>
+             </table>
+            </div>
+    </template>
+    <template if:true={selectedhcp}>
+        <lightning-card>
+            <div class="slds-text-heading_large">Details Page</div>
+        </lightning-card>
+           <div>
+               <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                   <thead>
+                      <tr class="slds-line-height_reset">
+                         <th class="" scope="col">
+                            <div class="slds-truncate">Full Name</div>
+                         </th>
+                         <th class="" scope="col">
+                            <div class="slds-truncate">Gender</div>
+                         </th>
+                         <th class="" scope="col">
+                           <div class="slds-truncate">NPI Number</div>
+                        </th>
+                         <th class="" scope="col">
+                           <div class="slds-truncate">Address</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate">Status</div>
+                         </th>
+                        
+                      </tr>
+                   </thead>
+                   <tbody>
+                      <!--iterate all choosen records using for-each iteration -->    
+                      <template if:true={choosenHcp}>
+                       <template for:each={choosenHcp} for:item="hcp">
+                           <tr class="slds-hint-parent" key={hcp.Id}>
+                               <td>
+                                   <div class="slds-truncate">{hcp.Name_Prefix__c} {hcp.First_Name__c} {hcp.Middle_Name__c} {hcp.Last_Name__c} {hcp.Credential__c}</div>
+                               </td>
+                               <td>
+                                   <div class="slds-truncate">{hcp.Gender__c}</div>
+                               </td>
+                               <td>
+                                   <div class="slds-truncate">{hcp.NPI__c}</div>
+                               </td>
+                               <td> 
+                                   <div class="slds-truncate">{hcp.Location_Address__c}</div>
+                               </td>
+                               <td> 
+                                <div class="slds-truncate">{hcp.status__c}</div>
+                            </td>
+                               
+                           </tr>
+                        </template>
+                      </template>
+                      
+                   </tbody>
+                </table>
+                <lightning-button variant="brand" name="GoBack" label="Back To Search" onclick={backToSearch} class="slds-m-left_x-small"></lightning-button>
+           </div>   
+       </template>
+</template>

@@ -1,0 +1,18 @@
+<template>
+    <lightning-input name='name' label="Name of the food Item" onchange={handleClick}></lightning-input>
+    <lightning-combobox
+            name="type"
+            label="Type Of Drink"
+            value={val}
+            placeholder="Select Type"
+            options={options}
+            onchange={handleClick} ></lightning-combobox>
+            <lightning-input name='quan' label="Quantity" onchange={handleClick}></lightning-input>
+            <lightning-input name='price' label="Price" onchange={handleClick}></lightning-input>
+            <template if:true={error}>
+                <c-error-panel errors={error}></c-error-panel>
+            </template>
+    <!-- <lightning-button variant="base" label="Calculate"  onclick={handleClick} ></lightning-button> -->
+    <p>Total{total}</p>
+    
+</template>

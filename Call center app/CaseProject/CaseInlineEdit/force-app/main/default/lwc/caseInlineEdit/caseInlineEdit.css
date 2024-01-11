@@ -1,0 +1,18 @@
+.styled-select {
+    background: transparent;
+    width: 200px;
+    padding: 5px;
+    font-size: 15px;
+    line-height: 1;
+    border: 1 px solid black;
+    border-radius: 0;
+    height: 34px;
+    -webkit-appearance: none;
+    font-family:helvetica-roman;
+    color:black;   
+     background-color: rgba(0, 0, 0, 0);
+     -webkit-appearance: none;
+     border: 1 px solid black;
+     text-indent: 0.01px;
+     text-overflow: '';
+ }

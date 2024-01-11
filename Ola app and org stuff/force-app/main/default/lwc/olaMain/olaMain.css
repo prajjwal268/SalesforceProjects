@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+    padding: 2%;
+}
+.show{
+    float: left;
+}
+.new{
+    float: right;
+}
+.btns{
+    width: 700px;
+    height: 30px;
+}
+.mainDiv{
+    height: 300px;
+}
+
+.demoDiv{
+    height: 300px;
+}

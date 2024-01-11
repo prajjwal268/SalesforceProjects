@@ -1,0 +1,62 @@
+<template>
+    <lightning-card title="Post Office Details" icon-name="utility:case">
+        <lightning-input type="text" onchange={handleNameChange} label="Enter Branch Name"></lightning-input>
+        <lightning-button variant="brand-outline" label="Search Branch" title="Primary action with lighter look" onclick={postOfficeSearch} class="slds-m-left_x-small"></lightning-button>
+    </lightning-card>
+    <template if:true={searchClicked}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Name">Name</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Region">Region</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="PINCode">PINCode</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="BranchType">BranchType</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="District">District</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Division">Division</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="State">State</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={postOffice} for:item="pos"> 
+                    <tr key={pos.Id} class="slds-hint-parent">
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="Name">{pos.Name}</div>
+                        </td>
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="Region">{pos.Region}</div>
+                        </td>
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="PINCode">{pos.PINCode}</div>
+                        </td>
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="BranchType">{pos.BranchType}</div>
+                        </td>
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="District">{pos.District}</div>
+                        </td>
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="Division">{pos.Division}</div>
+                        </td>
+                        <td data-label="Confidence">
+                            <div class="slds-truncate" title="State">{pos.State}</div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>   
+</template>

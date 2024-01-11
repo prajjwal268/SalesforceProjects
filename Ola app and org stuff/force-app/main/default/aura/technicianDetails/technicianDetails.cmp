@@ -1,0 +1,19 @@
+<aura:component controller="ContactController" extends="c:dataCon">
+    <aura:attribute name="clist" type="List"/>
+    <aura:handler event="c:appEvent" action="c.show"/>
+    <div>
+    	<table class="slds-table slds-table--bordered">
+        	<tbody>
+            	<aura:iteration items="{!v.clist}" var="c">
+                	<tr>
+                    	<td>{!c.FirstName}</td>
+                        <td>{!c.LastName}</td>
+                        <td>{!c.Email}</td>
+                        <td>{!c.MailingState}</td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+	
+</aura:component>

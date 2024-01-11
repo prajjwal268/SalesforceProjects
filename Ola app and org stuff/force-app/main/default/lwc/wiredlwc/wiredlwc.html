@@ -1,0 +1,15 @@
+<template>
+    <lightning-card title="ApexWireMethodToProperty" icon-name="custom:custom63">
+        <div class="slds-m-around_medium">
+            <lightning-button label="Load Contacts" variant='brand' onclick={handleLoad}></lightning-button>
+            <template if:true={contacts}>
+                <template for:each={contacts} for:item="contact">
+                    <p key={contact.Id}>{contact.FirstName}</p>
+                </template>
+            </template>
+            <template if:true={contacts}>
+                <p>Some error occured</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

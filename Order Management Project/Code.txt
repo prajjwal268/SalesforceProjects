@@ -1,0 +1,412 @@
+121public with sharing class OrderController {
+
+    class ProductDetail{
+        public String Id;
+        public String Name;
+        public String ProductCode;
+        public String Brand;
+        public String Stock_Quantity;
+        public String Quantity;
+        public String ListPrice;
+        public String UnitPrice;
+        public String Discount;
+        public String PriceBookEntryId;
+    }
+
+    @AuraEnabled
+    public static String getProducts(String searchVal,String priceBookId){
+        map<Id,Product2> productList = new map<Id,Product2>([select Id,ProductCode,Name,Brand__c,Stock_Quantity__c from Product2 where Name LIKE :'%'+searchVal+'%']);
+        list<PricebookEntry> priceBookEntryIdList=[select Id,Product2Id,UnitPrice from PricebookEntry where Product2Id IN :productList.keySet() AND Pricebook2Id=:priceBookId];
+        map<Id,String> priceBookList=new map<Id,String>();
+        map<Id,Decimal> unitPriceList=new map<Id,Decimal>();
+        for(PricebookEntry item:priceBookEntryIdList){
+            priceBookList.put(item.Product2Id,item.Id);
+            unitPriceList.put(item.Product2Id,item.UnitPrice);
+        }
+        String str='[';
+        for(Id key:productList.keySet()){
+            str+='{"Id":"'+key+'","'+'Name":"'+productList.get(key).Name+'","'+'ProductCode":"'+productList.get(key).ProductCode+'","'+'ListPrice":"'+unitPriceList.get(key)+'","'+'Quantity":"","Brand__c":"'+productList.get(key).Brand__c+'","'+'Stock_Quantity__c":"'+productList.get(key).Stock_Quantity__c+'","'+'PriceBookEntryId":"'+priceBookList.get(key)+'"}'+',';
+        }
+        str = str.substring(0, str.length()-1);
+        str+=']';
+        if(str.equals(']')){
+            str='';
+        }
+        return str;
+    }
+
+    @AuraEnabled
+    public static String createOrder(String selectedProducts,String priceBookId){
+        list<ProductDetail> productList=new list<ProductDetail>();
+        JSONParser parser = JSON.createParser(selectedProducts);
+        while (parser.nextToken() != null) {
+            if (parser.getCurrentToken() == JSONToken.START_ARRAY) {
+                while (parser.nextToken() != null) {
+                    if (parser.getCurrentToken() == JSONToken.START_OBJECT) {
+                        ProductDetail acc = (ProductDetail)parser.readValueAs(ProductDetail.class);
+                        system.debug('Id:' + acc.Id + ' Name:' + acc.Name);
+                        productList.add(acc);
+                    }
+                }
+            }
+        }
+        Order order=new Order(AccountId='0012w0000058gkfAAA',EffectiveDate=date.parse('04/16/2020'),Status='Created',Pricebook2Id=priceBookId);
+        insert order;
+        list<OrderItem> orderItemList = new list<OrderItem>();
+        for(ProductDetail product:productList){
+            orderItemList.add(new OrderItem(OrderId=order.Id,Product2Id=product.Id,Quantity=Decimal.valueOf(product.Quantity),UnitPrice=Decimal.valueOf(product.UnitPrice),PricebookEntryId=product.PriceBookEntryId));
+        }
+        insert orderItemList;
+        return 'Done Insertion Successfully';
+    }
+    
+}
+===========================================================================================================================================================================
+===========================================================================================================================================================================
+===========================================================================================================================================================================
+===========================================================================================================================================================================
+
+
+
+<template>
+
+      <lightning-layout horizontal-align="spread">
+          <lightning-layout-item padding="around-small" size="4">
+              <lightning-input type="text"
+                  label="Account" required>
+              </lightning-input>
+          </lightning-layout-item>
+          <lightning-layout-item padding="around-small" size="4">
+              <!--Free Space-->
+          </lightning-layout-item>
+          <lightning-layout-item padding="around-small" size="4">
+              <!--Free Space-->
+          </lightning-layout-item>
+      </lightning-layout>
+
+
+    <div class="slds-m-around_medium">
+        <div class="slds-m-bottom_small">
+            <lightning-input type="text"
+                label="Search Products Here"
+                onkeyup={handleSearch}>
+            </lightning-input>
+        </div>
+    </div>
+
+    <!--Search Table-->
+
+    <template if:true={showSearchList}>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">MRP</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Action</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <!--iterate all contact records using for-each iteration -->    
+                   <template if:true={productList}>
+                    <template for:each={productList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Brand__c}Brand</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.ListPrice}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-button label="Add Item"
+                                                                            variant="brand"
+                                                                            value={product.Id}
+                                                                            onclick={addProduct}>
+                                                            </lightning-button>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                </tbody>
+             </table>
+            </div>
+    </template>
+
+      <!--Selected Product Table-->
+
+    <h1>Selected Products List</h1><br>
+    <template if:true={selectedTableToggle}>
+        <div>
+        
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Stock Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Discount(%)</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Action</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <!--iterate all contact records using for-each iteration -->    
+                   <template if:true={selectedProductList}>
+                    <template for:each={selectedProductList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Brand}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Stock_Quantity}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="1" variant="label-hidden" name={product.Id} value={product.Quantity} onchange={updateQuantity} required></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="0" max="100" variant="label-hidden" name={product.Id} value={product.Discount} onchange={updateDiscount} required></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-button label="Remove" variant="brand" value={product.Id} onclick={removeClicked}></lightning-button>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                </tbody>
+             </table>
+        </div>
+    </template>
+
+    <br><br>
+    <lightning-button variant="brand" label="SAVE" onclick={saveClicked} class="slds-m-left_x-small"></lightning-button>
+    &nbsp;
+    <lightning-button variant="brand" label="Clear Search" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+
+    <br><br>
+
+    <template if:true={showFinalTable}>
+        <div>
+        
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Stock Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Discount(%)</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <!--iterate all contact records using for-each iteration -->    
+                   <template if:true={selectedProductList}>
+                    <template for:each={selectedProductList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate ">{product.Brand}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Stock_Quantity}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="1" variant="label-hidden" name={product.Id} value={product.Quantity} disabled></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="0" max="100" variant="label-inline" name={product.Id} value={product.Discount} disabled></lightning-input>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                </tbody>
+             </table>
+        </div>
+    </template>
+
+</template>
+
+===========================================================================================================================================================================
+===========================================================================================================================================================================
+===========================================================================================================================================================================
+===========================================================================================================================================================================
+
+
+import { LightningElement, wire, track} from 'lwc';
+import getProducts from '@salesforce/apex/OrderController.getProducts';
+import createOrder from '@salesforce/apex/OrderController.createOrder';
+//import confirmSaveOrder from '@salesforce/apex/OrderController.confirmSaveOrder';
+
+
+export default class Order_Create extends LightningElement {
+
+    productList;
+    searchVal;showSearchList=false;
+    selectedProductList=[];
+    selectedTableToggle=true;
+    showFinalTable=false;
+
+    handleSearch(event){
+        if(event.target.value.length!=0){
+            getProducts({searchVal:event.target.value,priceBookId:'01s2w000004MN8WAAW'})
+            .then(result=>{
+                this.productList=JSON.parse(result);
+            });
+            this.showSearchList=true;
+        }
+        if(event.target.value.length==0){
+            this.showSearchList=false;
+        }
+    }
+
+    addProduct(event){
+        this.selectedTableToggle=false;
+        var id=event.target.value;
+        var index = -1;
+        var selectedproduct=new Object();
+        for(var product of this.productList){
+            index++;
+            if(id==product.Id){
+                selectedproduct.Id=product.Id;
+                selectedproduct.Name=product.Name;
+                selectedproduct.ProductCode=product.ProductCode;
+                selectedproduct.Brand=product.Brand;
+                selectedproduct.Stock_Quantity=product.Stock_Quantity;
+                selectedproduct.Quantity='1';
+                selectedproduct.UnitPrice=0;
+                selectedproduct.ListPrice=product.ListPrice;
+                selectedproduct.Discount=0;
+                selectedproduct.PriceBookEntryId=product.PriceBookEntryId;
+                break;
+            }
+        }
+        if(!this.selectedProductList.some(item => item.Id === selectedproduct.Id)){
+            this.selectedProductList.push(selectedproduct);
+        }
+        this.showSearchList=false;
+        this.selectedTableToggle=true;
+    }
+
+    updateQuantity(event){
+        var index = -1;
+        for(var product of this.selectedProductList){
+            index++;
+            if(event.target.name==product.Id){
+                break;
+            }
+        }
+        this.selectedProductList[index].Quantity=event.target.value;
+    }
+    updateDiscount(event){
+        var index = -1;
+        for(var product of this.selectedProductList){
+            index++;
+            if(event.target.name==product.Id){
+                break;
+            }
+        }
+        this.selectedProductList[index].Discount=event.target.value;
+    }
+
+    removeClicked(event){
+        var id=event.target.value;
+        for(var product of this.selectedProductList){
+            if(id==product.Id){
+                const index = this.selectedProductList.indexOf(product);
+                this.selectedProductList.splice(index,1)
+            }
+        }
+        this.selectedTableToggle=false;
+        this.selectedTableToggle=true;
+    }
+    
+    saveClicked(){
+        this.selectedTableToggle=false;
+        for(var product of this.selectedProductList){
+            var selectedproduct=new Object();
+            if(product.Quantity>10){
+                selectedproduct.Id=product.Id;
+                selectedproduct.Name=product.Name;
+                selectedproduct.ProductCode=product.ProductCode;
+                selectedproduct.Brand=product.Brand__c;
+                selectedproduct.Stock_Quantity=product.Stock_Quantity__c;
+                selectedproduct.Quantity='1';
+                selectedproduct.ListPrice=0;
+                selectedproduct.UnitPrice=0;
+                selectedproduct.Discount=100;
+                selectedproduct.PriceBookEntryId=product.PriceBookEntryId;
+                this.selectedProductList.push(selectedproduct);
+            }
+            product.UnitPrice=product.ListPrice - (product.ListPrice * product.Discount / 100);
+        }
+        createOrder({selectedProducts:JSON.stringify(this.selectedProductList),priceBookId:'01s2w000004MN8WAAW'})
+        .then(result=>{
+            console.log('Order Id : ' + result);
+        });
+        this.showFinalTable=true;
+    }
+
+}
+

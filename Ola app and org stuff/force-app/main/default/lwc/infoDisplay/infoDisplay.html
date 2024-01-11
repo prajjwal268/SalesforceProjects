@@ -1,0 +1,18 @@
+<template>
+    <div class="container">
+        
+    <a onclick={editInfo} >
+        <div style="padding: 2%;border:1px solid black;width:100px;">
+        <lightning-card icon-name="standard:account" variant="narrow" >
+            {driver.Name}<br/>
+            {driver.Car_Name__c}<br/>
+            {driver.Car_Type__c}<br/>
+            {driver.Vehicle_Number__c} <br/>
+            {driver.Rating__c}<img src={logo} width="10px" height="auto"><br/>
+            
+        </lightning-card></div>
+        
+    </a>
+    <lightning-button-icon icon-name="utility:delete" alternative-text="Delete" class="slds-m-left_xx-small" title="Delete" onclick={deleteDriverInfo}></lightning-button-icon> 
+    </div>
+</template>

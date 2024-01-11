@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+            "c/olaMain": [
+                "olaMain/olaMain.js"
+            ],
+            "c/infoDisplay": [
+                "infoDisplay/infoDisplay.js"
+            ],
+            "c/newForm": [
+                "newForm/newForm.js"
+            ]
+        }
+    },
+    "include": [
+        "**/*",
+        "../../../../.sfdx/typings/lwc/**/*.d.ts"
+    ],
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
+}

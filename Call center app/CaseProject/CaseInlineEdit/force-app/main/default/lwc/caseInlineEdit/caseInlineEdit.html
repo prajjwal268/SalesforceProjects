@@ -1,0 +1,35 @@
+<template>
+    <lightning-card title='Case List' icon-name="utility:case">
+        <div class = "slds-m-around_medium">
+            <lightning-input type="search" onchange={handleKeyChange} class = "slds-m-bottom_small" label = "Search By Subject" >
+            </lightning-input>
+            <template if:true={cases}>
+               
+                <c-custom-data-table  key-field="Id" 
+                                            data={cases} 
+                                            columns={columns} 
+                                            hide-checkbox-column="true" 
+                                            onpicklistchanged={picklistChanged}
+                                            onvalueselect={handleSelection}
+                                            oncellchange={handleCellChange}
+                                            show-row-number-column="true"
+                                            onsave={handleSave}
+                                            draft-values={draftValues}> 
+                </c-custom-data-table >
+
+                  
+            </template>
+            <template if:true={error}>
+            </template>
+            Filter Page By Records:
+            <div class="styled-select"> 
+            <select class="slds-select" name = "optionSelect" onchange={changeHandler} size="1" >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+            </select> 
+            </div>
+        </div> 
+    </lightning-card>
+</template>

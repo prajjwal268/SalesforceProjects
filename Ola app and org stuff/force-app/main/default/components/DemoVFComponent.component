@@ -1,0 +1,5 @@
+<apex:component >
+    <apex:attribute name="msg" type="String" required="true" description="Messge variable to received from parent"></apex:attribute>
+    Hello{!$User.FirstName}{!$User.LastName} This is VF Component..<br/>
+    <div style="color:red;">Message received from parent is => {!msg}</div>
+</apex:component>

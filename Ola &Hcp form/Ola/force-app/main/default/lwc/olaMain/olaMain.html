@@ -1,0 +1,32 @@
+<template>
+    <div>
+        <lightning-button name="Mini" label="Mini" onclick={showInfo} variant="brand"></lightning-button>
+        <lightning-button name="Mini" label="New" onclick={newData} variant="success"></lightning-button>
+    </div>
+    <div>
+        <lightning-button name="Micro" label="Micro" onclick={showInfo} variant="brand"></lightning-button>
+        <lightning-button name="Micro" label="New" onclick={newData} variant="success"></lightning-button>
+    </div>
+    <div>
+        <lightning-button name="Uber Select" label="Uber Select" onclick={showInfo} variant="brand"></lightning-button>
+        <lightning-button name="Uber Select" label="New" onclick={newData} variant="success"></lightning-button>
+    </div>
+    <div>
+        <lightning-button name="Suv" label="Suv" onclick={showInfo} variant="brand"></lightning-button>
+        <lightning-button name="Suv" label="New" onclick={newData} variant="success"></lightning-button>
+    </div>
+
+    <div>
+        <template if:true={info}>
+            
+            <template for:each={info} for:item='driverInfo'>
+
+                <c-info-display
+                    key={driverInfo.Id}
+                    driver={driverInfo}>
+                </c-info-display> 
+                   
+            </template> 
+        </template>
+    </div>
+</template>

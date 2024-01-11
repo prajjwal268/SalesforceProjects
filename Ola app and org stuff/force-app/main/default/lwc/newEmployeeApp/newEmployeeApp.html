@@ -1,0 +1,32 @@
+<template>
+    <lightning-card title="Datatable Example" icon-name="custom:custom63">
+
+        <lightning-record-form
+            object-api-name='EmployeeData__c'
+            fields={fields}
+            onsuccess={handleSuccess}>
+        </lightning-record-form>
+
+
+        <div class="slds-m-around_medium">
+            <template if:true={emps.data}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={emps.data}
+                    columns={columns}
+                    onsave={handleSave}
+                    onrowselection={handleClickAdd}
+                    draft-values={draftValues}>
+                </lightning-datatable><br/>
+                <center><lightning-button variant="destructive" 
+                    label="Delete" 
+                    icon-name="utility:delete"
+                    icon-position="right"
+                    onclick={deleteRec}></lightning-button></center>
+            </template>
+            <template if:true={emps.error}>
+                <!-- handle Apex error -->
+            </template>
+        </div>
+    </lightning-card>
+</template>

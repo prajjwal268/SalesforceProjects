@@ -1,0 +1,220 @@
+
+<template>
+
+      <lightning-layout horizontal-align="spread">
+          <lightning-layout-item padding="around-small" size="4">
+              <lightning-input type="text"
+                  label="Account" required>
+              </lightning-input>
+          </lightning-layout-item>
+          <lightning-layout-item padding="around-small" size="4">
+              <!--Free Space-->
+          </lightning-layout-item>
+          <lightning-layout-item padding="around-small" size="4">
+              <!--Free Space-->
+          </lightning-layout-item>
+      </lightning-layout>
+
+
+    <div class="slds-m-around_medium">
+        <div class="slds-m-bottom_small">
+            <lightning-input type="text"
+                label="Search Products Here"
+                onkeyup={handleSearch}>
+            </lightning-input>
+        </div>
+    </div>
+
+    <!--Search Table-->
+
+    <template if:true={showSearchList}>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">MRP</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Action</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <!--iterate all contact records using for-each iteration -->    
+                   <template if:true={productList}>
+                    <template for:each={productList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Brand__c}Brand</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.ListPrice}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-button label="Add Item"
+                                                                            variant="brand"
+                                                                            value={product.Id}
+                                                                            onclick={addProduct}>
+                                                            </lightning-button>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                </tbody>
+             </table>
+            </div>
+    </template>
+
+      <!--Selected Product Table-->
+
+    <h1>Selected Products List</h1><br>
+    <template if:true={selectedTableToggle}>
+        <div>
+        
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Stock Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Discount(%)</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Action</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <!--iterate all contact records using for-each iteration -->    
+                   <template if:true={selectedProductList}>
+                    <template for:each={selectedProductList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Brand}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Stock_Quantity}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="1" variant="label-hidden" name={product.Id} value={product.Quantity} onchange={updateQuantity} required></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="0" max="100" variant="label-hidden" name={product.Id} value={product.Discount} onchange={updateDiscount} required></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-button label="Remove" variant="brand" value={product.Id} onclick={removeClicked}></lightning-button>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                </tbody>
+             </table>
+        </div>
+    </template>
+
+    <br><br>
+    <lightning-button variant="brand" label="SAVE" onclick={saveClicked} class="slds-m-left_x-small"></lightning-button>
+    &nbsp;
+    <lightning-button variant="brand" label="Clear Search" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+
+    <br><br>
+
+    <template if:true={showFinalTable}>
+        <div>
+        
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Stock Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Discount(%)</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <!--iterate all contact records using for-each iteration -->    
+                   <template if:true={selectedProductList}>
+                    <template for:each={selectedProductList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate ">{product.Brand}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Stock_Quantity}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="1" variant="label-hidden" name={product.Id} value={product.Quantity} disabled></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="0" max="100" variant="label-inline" name={product.Id} value={product.Discount} disabled></lightning-input>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+                   </template>
+                </tbody>
+             </table>
+        </div>
+    </template>
+
+</template>

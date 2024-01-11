@@ -1,0 +1,39 @@
+<template>
+   
+        <!--Record Form-->
+        <lightning-record-edit-form object-api-name="Product1__c" onsuccess={handleSuccess}>    
+                <lightning-input-field field-name="Product_Id__c" label="Enter Product Id"></lightning-input-field>
+                <lightning-input-field field-name="Name" label="Enter Product Name"></lightning-input-field>
+                <lightning-input-field field-name="Price__c" label="Enter Product Price"></lightning-input-field>
+                <lightning-input-field field-name="Type__c" label="Enter Product Type"></lightning-input-field>
+                <lightning-button variant="brand"
+                    class="slds-m-top_small"
+                    type="submit"
+                    label="ADD Product">
+                </lightning-button>
+        </lightning-record-edit-form>
+        
+   
+    <!--Record Form Ends-->
+    <br/>
+    
+        <!--List of products-->
+        <p>List of All Products</p>
+        <!--Logo of information icon -->
+        
+        <lightning-card
+            variant="narrow"
+            icon-name="action:info">
+            </lightning-card>
+        <template if:true={products}>
+        <lightning-datatable
+                key-field="id"
+                data={products}
+                columns={columns}>
+        </lightning-datatable>
+    </template>
+    <template if:false={products}>
+       Error While Fetching Data. No Data Recieved
+    </template>
+     
+</template>
